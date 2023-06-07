@@ -54,10 +54,26 @@ namespace bookAPI.Controllers
             var exists = await _context.Books.FindAsync(id);
             if (exists == null) return NotFound();
 
-            // update Updated
             book.Updated = DateTime.UtcNow;
 
             _context.Entry(book).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            // 204 status
+            return NoContent();
+
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var book = await _context.Books.FindAsync(id);
+            // 404
+            if (book == null) return NotFound();
+
+            _context.Books.Remove(book);
             await _context.SaveChangesAsync();
 
             // 204 status
